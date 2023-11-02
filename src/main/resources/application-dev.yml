@@ -1,0 +1,9 @@
+server:
+  undertow:
+    accesslog:
+      # 日志存放目录
+      dir: ./logs
+# logback
+logging:
+  file:
+    path: ./logs

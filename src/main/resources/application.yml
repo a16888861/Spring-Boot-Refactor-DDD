@@ -1,0 +1,85 @@
+# UnderTow服务相关设置
+server:
+  port: 8000
+  undertow:
+    accesslog:
+      # 是否启动日志
+      enabled: false
+      # 日志格式
+      pattern: common
+      # 日志文件名前缀
+      prefix: access_log
+      # 日志文件名后缀
+      suffix: log
+    # HTTP POST请求最大的大小
+    max-http-post-size: -1
+    # 允许的最大 cookie 数量
+    max-cookies: 100
+    # 允许的最大请求头数量
+    max-headers: 100
+    threads:
+      # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+      io: 4
+      # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+      worker: 20
+    # 每块buffer的空间大小,越小的空间被利用越充分，buffer会用于服务器连接的IO操作,类似netty的池化内存管理
+    buffer-size: 1024
+    # 是否分配的直接内存
+    direct-buffers: true
+    # 是否启用SSL
+    allow-encoded-slash: false
+# logback
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    org:
+      springframework:
+        web: debug
+# Spring 相关设置
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ddd-spring-boot
+  # 因为Springfox使用的路径匹配是基于AntPathMatcher的，而Spring Boot 2.6.X使用的是PathPatternMatcher
+  # 需要修改匹配路径swagger才可以正常运行
+  mvc:
+    format:
+      date: yyyy-MM-dd HH:mm:ss
+    pathmatch:
+      matching-strategy: ant_path_matcher
+#    servlet:
+#      path: /ddd
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  banner:
+    location: banner.txt
+  main:
+    allow-bean-definition-overriding: true
+# actuator监控
+management:
+  #  server:
+  #    # 设置监控服务端口,如果没写默认就是服务器的端口
+  #    port: 8081
+  endpoints:
+    # 设置端点是否可用 默认只有shutdown可用
+    enabled-by-default: true
+    web:
+      # 设置是否暴露端点 默认只有health和info可见
+      exposure:
+        # 包括所有端点
+        include: "*" # 注意需要添加引号
+        # 排除端点
+        exclude: shutdown
+  endpoint:
+    health:
+      show-details: ALWAYS
+    #可以关闭指定的端点
+    shutdown:
+      enabled: false
+project:
+  global:
+    vo:
+      # api出入口vo实体位置(日志采集用)
+      location: com.springgboot.refactor.api.vo

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <springProperty name="LOG_HOME" source="logging.file.path" defaultValue="./.logs/default"/>
+    <property name="appName" value="rn-kafka"/>
+    <!-- 如果在ECS上部署服务测试和正式 日志的文件夹可以自行加一个环境参数做区分 -->
+    <springProfile name="dev">
+        <property name="LOG_HOME" value="./.logs/"/>
+    </springProfile>
+    <springProfile name="test">
+        <property name="LOG_HOME" value="/logs"/>
+    </springProfile>
+    <springProfile name="pro">
+        <property name="LOG_HOME" value="/logs"/>
+    </springProfile>
+
+    <!-- 彩色日志 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr"
+                    converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+    <!-- 彩色日志格式 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+    <!-- 输出到控制台(本地看哪种方便一点 自己做调整) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 日志文件输出格式 -->
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                        <!--打印时间-->
+                        "time": "%date{yyyy-MM-dd HH:mm:ss.SSS}",
+                        <!--日志ID-->
+                        "traceId": "%X{traceId}",
+                        <!--日志级别-->
+                        "level": "%level",
+                        <!--线程名-->
+                        "thread": "%thread",
+                        <!--全限定类名-->
+                        "class": "%logger{0}",
+                        <!--日志打印的信息-->
+                        "message": "%msg",
+                        <!--堆栈异常信息-->
+                        "stackTrace":"%xEx"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+        <!-- 使用彩色日志配置 -->
+        <encoder>
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            <!-- 设置字符集 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 输出到文件 INFO -->
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${LOG_HOME}/info.log</file>
+        <!-- 日志文件输出格式 -->
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                        <!--打印时间-->
+                        "time": "%date{yyyy-MM-dd HH:mm:ss.SSS}",
+                        <!--日志ID-->
+                        "traceId": "%X{traceId}",
+                        <!--日志级别-->
+                        "level": "%level",
+                        <!--线程名-->
+                        "thread": "%thread",
+                        <!--全限定类名-->
+                        "class": "%logger{0}",
+                        <!--日志打印的信息-->
+                        "message": "%msg",
+                        <!--堆栈异常信息-->
+                        "stackTrace":"%xEx"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 每天日志归档路径以及格式 -->
+            <fileNamePattern>${LOG_HOME}/${appName}-%d{yyyy-MM-dd}-info.log</fileNamePattern>
+            <!-- 日志文件保留天数 -->
+            <maxHistory>1</maxHistory>
+        </rollingPolicy>
+        <!-- 此日志文件只记录info级别的 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 输出到文件 WARN -->
+    <appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${LOG_HOME}/warn.log</file>
+        <!-- 日志文件输出格式 -->
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                        <!--打印时间-->
+                        "time": "%date{yyyy-MM-dd HH:mm:ss.SSS}",
+                        <!--日志ID-->
+                        "traceId": "%X{traceId}",
+                        <!--日志级别-->
+                        "level": "%level",
+                        <!--线程名-->
+                        "thread": "%thread",
+                        <!--全限定类名-->
+                        "class": "%logger{0}",
+                        <!--日志打印的信息-->
+                        "message": "%msg",
+                        <!--堆栈异常信息-->
+                        "stackTrace":"%xEx"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 每天日志归档路径以及格式 -->
+            <fileNamePattern>${LOG_HOME}/${appName}-%d{yyyy-MM-dd}-warn.log</fileNamePattern>
+            <!-- 日志文件保留天数 -->
+            <maxHistory>1</maxHistory>
+        </rollingPolicy>
+        <!-- 此日志文件只记录warn级别的 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 输出到文件 ERROR -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${LOG_HOME}/error.log</file>
+        <!-- 日志文件输出格式 -->
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                        <!--打印时间-->
+                        "time": "%date{yyyy-MM-dd HH:mm:ss.SSS}",
+                        <!--日志ID-->
+                        "traceId": "%X{traceId}",
+                        <!--日志级别-->
+                        "level": "%level",
+                        <!--线程名-->
+                        "thread": "%thread",
+                        <!--全限定类名-->
+                        "class": "%logger{0}",
+                        <!--日志打印的信息-->
+                        "message": "%msg",
+                        <!--堆栈异常信息-->
+                        "stackTrace":"%xEx"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 每天日志归档路径以及格式 -->
+            <fileNamePattern>${LOG_HOME}/${appName}-%d{yyyy-MM-dd}-error.log</fileNamePattern>
+            <!-- 日志文件保留天数 -->
+            <maxHistory>1</maxHistory>
+        </rollingPolicy>
+        <!-- 此日志文件只记录error级别的 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <logger name="com.zmeng.rinascimento.kafka" level="debug" additivity="true"/>
+    <logger name="org.springframework" level="INFO" additivity="true"/>
+
+    <!-- 系统操作日志 -->
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="INFO"/>
+        <appender-ref ref="WARN"/>
+        <appender-ref ref="ERROR"/>
+    </root>
+
+    <!-- sql操作日志 -->
+    <logger name="java.sql.Connection" level="INFO"/>
+    <logger name="java.sql.Statement" level="INFO"/>
+    <logger name="java.sql.PreparedStatement" level="INFO"/>
+
+</configuration>
