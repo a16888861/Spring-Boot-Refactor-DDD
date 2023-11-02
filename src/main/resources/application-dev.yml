@@ -7,3 +7,11 @@ server:
 logging:
   file:
     path: ./logs
+# 异步线程池配置(监听器 or 定时任务使用)
+global:
+  async:
+    thread-pool:
+      enable: true
+      executors:
+        - threadPoolName: testListener
+          keepAliveSeconds: 5

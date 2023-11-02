@@ -44,17 +44,17 @@ public class TestListenerEvent2 {
      * AFTER_COMMIT + AFTER_COMPLETION是可以同时生效的
      * AFTER_ROLLBACK + AFTER_COMPLETION是可以同时生效的
      */
-    @Async(value = "eventScheduledThreadPoolTaskScheduler")
+    @Async(value = "testListener")
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT, value = {TestEvent.class})
     public void testEvent2(TestEvent event) {
         log.info("2.收到事件 commit前:{}", JSONObject.toJSONString(event));
     }
-    @Async(value = "eventScheduledThreadPoolTaskScheduler")
+    @Async(value = "testListener")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, value = {TestEvent.class})
     public void testEvent3(TestEvent event) {
         log.info("2.收到事件 commit后:{}", JSONObject.toJSONString(event));
     }
-    @Async(value = "eventScheduledThreadPoolTaskScheduler")
+    @Async(value = "testListener")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION, value = {TestEvent.class})
     public void testEvent4(TestEvent event) {
         log.info("2.收到事件 事物完成时:{}", JSONObject.toJSONString(event));

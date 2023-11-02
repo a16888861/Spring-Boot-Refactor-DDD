@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.zmeng.rinascimento.kafka.infrastructure.config.threadPool.ThreadPoolAutoConfiguration
