@@ -5,15 +5,15 @@ import com.springgboot.refactor.application.test.TestService;
 import com.springgboot.refactor.domain.test.entity.TestPojo;
 import com.springgboot.refactor.domain.test.event.TestEvent;
 import com.springgboot.refactor.infrastructure.response.WebResponse;
+import com.springgboot.refactor.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/test")
 @RequiredArgsConstructor
@@ -40,6 +40,20 @@ public class TestApi {
                 )
         );
 
+        return WebResponse.success();
+    }
+
+    @PostMapping("/getToken")
+    public WebResponse<Void> getToken() {
+        String token = JwtUtil.createToken("testUser");
+        log.info("getToken_token:{}", token);
+        log.info("getToken_verify:{}", JwtUtil.verify(token));
+        return WebResponse.success();
+    }
+
+    @PostMapping("/getToken/verify/{token}")
+    public WebResponse<Void> getToken(@PathVariable("token") String token) {
+        log.info("getToken_verify:{}", JwtUtil.verify(token));
         return WebResponse.success();
     }
 

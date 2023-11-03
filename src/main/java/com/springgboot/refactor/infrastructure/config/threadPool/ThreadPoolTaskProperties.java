@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
-import static com.springgboot.refactor.infrastructure.config.threadPool.Constant.THREAD_POOL_PRE_ADDRESS;
+import static com.springgboot.refactor.infrastructure.config.threadPool.ThreadPoolConstant.THREAD_POOL_PRE_ADDRESS;
 
 
 /**

@@ -3,7 +3,7 @@ package com.springgboot.refactor.infrastructure.constants;
 public class BaseConstants {
 
     /**
-     * MDC id
+     * MDC TraceId
      */
     public static final String TRACE_ID = "traceId";
     /**

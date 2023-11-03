@@ -25,8 +25,8 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.springgboot.refactor.infrastructure.config.threadPool.Constant.THREAD_POOL_ALL_ADDRESS;
-import static com.springgboot.refactor.infrastructure.config.threadPool.Constant.THREAD_POOL_PRE_ADDRESS;
+import static com.springgboot.refactor.infrastructure.config.threadPool.ThreadPoolConstant.THREAD_POOL_ALL_ADDRESS;
+import static com.springgboot.refactor.infrastructure.config.threadPool.ThreadPoolConstant.THREAD_POOL_PRE_ADDRESS;
 
 
 /**

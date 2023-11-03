@@ -7,11 +7,19 @@ server:
 logging:
   file:
     path: ./logs
-# 异步线程池配置(监听器 or 定时任务使用)
+# 全局自定义的一些配置
 global:
+  # 异步线程池配置(监听器 or 定时任务使用)
   async:
     thread-pool:
       enable: true
       executors:
         - threadPoolName: testListener
           keepAliveSeconds: 5
+  # Jwt安全相关配置
+  jwt:
+    security:
+      enable: true
+      secret: U0JBUDud82frFt8YHk9uZz0yNjQ1NA==
+      issuer: Elliot
+      param-key: SpringBootRefactorDDD
