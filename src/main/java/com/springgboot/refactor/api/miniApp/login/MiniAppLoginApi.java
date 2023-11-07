@@ -1,4 +1,4 @@
-package com.springgboot.refactor.api.login;
+package com.springgboot.refactor.api.miniApp.login;
 
 import com.springgboot.refactor.infrastructure.response.WebResponse;
 import com.springgboot.refactor.util.JwtUtil;
@@ -8,15 +8,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("secure")
+@RequestMapping("miniApp")
 @RequiredArgsConstructor
-public class LoginApi {
+public class MiniAppLoginApi {
 
-    // todo 待完成
+    /**
+     * 小程序登陆
+     */
     @PostMapping("/login")
     public WebResponse<String> login() {
-        return WebResponse.success(
-                JwtUtil.createToken("123")
-        );
+        // 生成token前做什么事情(校验用户信息)
+        String token = JwtUtil.createToken("123");
+        // 生成token后做什么事情(存redis)
+        return WebResponse.success(token);
     }
 }

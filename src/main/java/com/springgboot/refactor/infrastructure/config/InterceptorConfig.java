@@ -1,14 +1,11 @@
 package com.springgboot.refactor.infrastructure.config;
 
-import com.springgboot.refactor.infrastructure.interceptor.AppletSecurityInterceptor;
 import com.springgboot.refactor.infrastructure.interceptor.MdcInterceptor;
+import com.springgboot.refactor.infrastructure.interceptor.MiniAppSecurityInterceptor;
 import com.springgboot.refactor.infrastructure.interceptor.PcSecurityInterceptor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +17,21 @@ import java.util.List;
  */
 @Slf4j
 @Configuration
-@RequiredArgsConstructor
 public class InterceptorConfig implements WebMvcConfigurer {
 
     private final MdcInterceptor mdcInterceptor;
     private final PcSecurityInterceptor pcSecurityInterceptor;
-    private final AppletSecurityInterceptor appletSecurityInterceptor;
+    private final MiniAppSecurityInterceptor miniAppSecurityInterceptor;
+
+    public InterceptorConfig(
+            MdcInterceptor mdcInterceptor,
+            PcSecurityInterceptor pcSecurityInterceptor,
+            MiniAppSecurityInterceptor miniAppSecurityInterceptor
+    ) {
+        this.mdcInterceptor = mdcInterceptor;
+        this.pcSecurityInterceptor = pcSecurityInterceptor;
+        this.miniAppSecurityInterceptor = miniAppSecurityInterceptor;
+    }
 
     /**
      * 指定静态资源的位置 非前后端分离项目需要注册
@@ -33,8 +39,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         /*静态资源的位置*/
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/templates/**").addResourceLocations("classpath:/templates/");
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/templates/**")
+                .addResourceLocations("classpath:/templates/");
         /*放行swagger*/
         registry.addResourceHandler("swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
@@ -60,16 +68,13 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
         excludePathList.add("/static");
         excludePathList.add("/public");
-        excludePathList.add("/user/register");
 
         /*自定义拦截器*/
-        registry.addInterceptor(mdcInterceptor)
-                .addPathPatterns("/**");
-        registry.addInterceptor(pcSecurityInterceptor)
-                .addPathPatterns("/pc")
-                .excludePathPatterns(excludePathList);
-        registry.addInterceptor(appletSecurityInterceptor)
-                .addPathPatterns("/applet")
+        registry.addInterceptor(mdcInterceptor);
+        registry.addInterceptor(pcSecurityInterceptor);
+        InterceptorRegistration interceptorRegistration = registry.addInterceptor(miniAppSecurityInterceptor);
+        interceptorRegistration
+                .addPathPatterns("/**")
                 .excludePathPatterns(excludePathList);
         log.info("拦截器放行的接口为:" + excludePathList);
     }
