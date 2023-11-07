@@ -83,3 +83,12 @@ project:
     vo:
       # api出入口vo实体位置(日志采集用)
       location: com.springgboot.refactor.api.vo
+wx:
+  miniapp:
+    enable: true
+    use-redis: false
+    configs:
+      # todo 开发小程序记得更换掉这里
+      - appid: 123
+        secret: 345
+        msg-data-format: JSON

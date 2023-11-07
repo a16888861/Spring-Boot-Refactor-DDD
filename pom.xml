@@ -32,7 +32,9 @@
         <!-- guava版本号 -->
         <guava.version>31.1-jre</guava.version>
         <!-- commons-fileUpload版本号 -->
-        <logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
+        <logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
+        <!-- 微信小程序开发 -->
+        <weixin-java-miniapp.version>4.5.0</weixin-java-miniapp.version>
     </properties>
 
     <dependencies>
@@ -94,6 +96,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-miniapp</artifactId>
+            <version>${weixin-java-miniapp.version}</version>
         </dependency>
 
 
