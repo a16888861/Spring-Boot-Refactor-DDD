@@ -35,6 +35,8 @@
         <logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
         <!-- 微信小程序开发 -->
         <weixin-java-miniapp.version>4.5.0</weixin-java-miniapp.version>
+        <!-- akka -->
+        <akka.version>2.9.0</akka.version>
     </properties>
 
     <dependencies>
@@ -153,6 +155,19 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor-typed_2.13</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor-testkit-typed_2.13</artifactId>
+            <version>${akka.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -166,5 +181,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <!-- akka仓库地址 -->
+        <repository>
+            <id>akka-repository</id>
+            <name>Akka library repository</name>
+            <url>https://repo.akka.io/maven</url>
+        </repository>
+    </repositories>
 
 </project>
