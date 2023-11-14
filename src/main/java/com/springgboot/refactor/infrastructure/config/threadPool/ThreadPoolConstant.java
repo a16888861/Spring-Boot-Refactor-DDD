@@ -2,8 +2,6 @@ package com.springgboot.refactor.infrastructure.config.threadPool;
 
 /**
  * 线程池常量配置
- *
- * @author Elliot
  */
 public class ThreadPoolConstant {
 

@@ -5,12 +5,18 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 
+/**
+ * Actor启动停止的例子
+ */
 class StartStopActor1 extends AbstractActor {
 
   public static void main(String[] args) {
     ActorSystem system = ActorSystem.create("testSystem");
     ActorRef first = system.actorOf(StartStopActor1.props(), "first");
+    System.out.println(first);
     first.tell("stop", ActorRef.noSender());
+    // todo 可以再次使用sbt命令来启动这个项目 但是死信了 在停止之前重新试过 个人猜测这里应该配置好通信
+//    first.tell("sbt", ActorRef.noSender());
   }
 
   static Props props() {
@@ -20,7 +26,8 @@ class StartStopActor1 extends AbstractActor {
   @Override
   public void preStart() {
     System.out.println("first started");
-    getContext().actorOf(StartStopActor2.props(), "second");
+    ActorRef second = getContext().actorOf(StartStopActor2.props(), "second");
+    System.out.println(second);
   }
 
   @Override
