@@ -23,3 +23,7 @@ global:
       secret: U0JBUDud82frFt8YHk9uZz0yNjQ1NA==
       issuer: Elliot
       param-key: SpringBootRefactorDDD
+  # Akka配置
+  akka:
+    enable: true
+    refresh-configuration: false
