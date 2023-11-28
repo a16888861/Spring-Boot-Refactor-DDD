@@ -2,15 +2,20 @@ package com.springboot.refactor.akka;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.PoisonPill;
 import akka.testkit.javadsl.TestKit;
 import com.alibaba.fastjson2.JSONObject;
 import com.springgboot.refactor.akka_learn.Device;
+import com.springgboot.refactor.akka_learn.DeviceGroup;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @Slf4j
 public class TestAkka {
@@ -81,5 +86,106 @@ public class TestAkka {
         assertEquals(deviceActor, probe.getLastSender());
         Device.DeviceRegistered deviceRegistered = probe.expectMsgClass(Device.DeviceRegistered.class);
         System.out.println(JSONObject.toJSONString(deviceRegistered));
+    }
+
+    @Test
+    public void testRegisterDeviceActor() {
+        ActorSystem system = ActorSystem.create("testSystem");
+        TestKit probe = new TestKit(system);
+        ActorRef groupActor = system.actorOf(DeviceGroup.props("group"));
+
+        groupActor.tell(new Device.RequestTrackDevice("group", "device1"), probe.getRef());
+        probe.expectMsgClass(Device.DeviceRegistered.class);
+        ActorRef deviceActor1 = probe.getLastSender();
+
+        groupActor.tell(new Device.RequestTrackDevice("group", "device2"), probe.getRef());
+        probe.expectMsgClass(Device.DeviceRegistered.class);
+        ActorRef deviceActor2 = probe.getLastSender();
+        assertNotEquals(deviceActor1, deviceActor2);
+
+        // Check that the device actors are working
+        deviceActor1.tell(new Device.RecordTemperature(0L, 1.0), probe.getRef());
+        assertEquals(0L, probe.expectMsgClass(Device.TemperatureRecorded.class).requestId);
+        deviceActor2.tell(new Device.RecordTemperature(1L, 2.0), probe.getRef());
+        assertEquals(1L, probe.expectMsgClass(Device.TemperatureRecorded.class).requestId);
+    }
+
+    @Test
+    public void testIgnoreRequestsForWrongGroupId() {
+        ActorSystem system = ActorSystem.create("testSystem");
+        TestKit probe = new TestKit(system);
+        ActorRef groupActor = system.actorOf(DeviceGroup.props("group"));
+
+        groupActor.tell(new Device.RequestTrackDevice("wrongGroup", "device1"), probe.getRef());
+        probe.expectNoMessage();
+    }
+
+    @Test
+    public void testReturnSameActorForSameDeviceId() {
+        ActorSystem system = ActorSystem.create("testSystem");
+        TestKit probe = new TestKit(system);
+        ActorRef groupActor = system.actorOf(DeviceGroup.props("group"));
+
+        groupActor.tell(new Device.RequestTrackDevice("group", "device1"), probe.getRef());
+        probe.expectMsgClass(Device.DeviceRegistered.class);
+        ActorRef deviceActor1 = probe.getLastSender();
+
+        groupActor.tell(new Device.RequestTrackDevice("group", "device1"), probe.getRef());
+        probe.expectMsgClass(Device.DeviceRegistered.class);
+        ActorRef deviceActor2 = probe.getLastSender();
+        assertEquals(deviceActor1, deviceActor2);
+    }
+
+    @Test
+    public void testListActiveDevices() {
+        ActorSystem system = ActorSystem.create("testSystem");
+        TestKit probe = new TestKit(system);
+        ActorRef groupActor = system.actorOf(DeviceGroup.props("group"));
+
+        groupActor.tell(new Device.RequestTrackDevice("group", "device1"), probe.getRef());
+        probe.expectMsgClass(Device.DeviceRegistered.class);
+
+        groupActor.tell(new Device.RequestTrackDevice("group", "device2"), probe.getRef());
+        probe.expectMsgClass(Device.DeviceRegistered.class);
+
+        groupActor.tell(new DeviceGroup.RequestDeviceList(0L), probe.getRef());
+        DeviceGroup.ReplyDeviceList reply = probe.expectMsgClass(DeviceGroup.ReplyDeviceList.class);
+        assertEquals(0L, reply.getRequestId());
+        assertEquals(Stream.of("device1", "device2").collect(Collectors.toSet()), reply.getIds());
+    }
+
+    @Test
+    public void testListActiveDevicesAfterOneShutsDown() {
+        ActorSystem system = ActorSystem.create("testSystem");
+        TestKit probe = new TestKit(system);
+        ActorRef groupActor = system.actorOf(DeviceGroup.props("group"));
+
+        groupActor.tell(new Device.RequestTrackDevice("group", "device1"), probe.getRef());
+        probe.expectMsgClass(Device.DeviceRegistered.class);
+        ActorRef toShutDown = probe.getLastSender();
+
+        groupActor.tell(new Device.RequestTrackDevice("group", "device2"), probe.getRef());
+        probe.expectMsgClass(Device.DeviceRegistered.class);
+
+        groupActor.tell(new DeviceGroup.RequestDeviceList(0L), probe.getRef());
+        DeviceGroup.ReplyDeviceList reply = probe.expectMsgClass(DeviceGroup.ReplyDeviceList.class);
+        assertEquals(0L, reply.getRequestId());
+        assertEquals(Stream.of("device1", "device2").collect(Collectors.toSet()), reply.getIds());
+
+        probe.watch(toShutDown);
+        toShutDown.tell(PoisonPill.getInstance(), ActorRef.noSender());
+        // 关闭actor actor在收到这个关闭事件之后 将设备从map中删除
+        probe.expectTerminated(toShutDown);
+
+        // using awaitAssert to retry because it might take longer for the groupActor
+        // to see the Terminated, that order is undefined
+        probe.awaitAssert(() -> {
+            groupActor.tell(new DeviceGroup.RequestDeviceList(1L), probe.getRef());
+            DeviceGroup.ReplyDeviceList r =
+                    probe.expectMsgClass(DeviceGroup.ReplyDeviceList.class);
+            assertEquals(1L, r.getRequestId());
+            assertEquals(Stream.of("device2").collect(Collectors.toSet()), r.getIds());
+            return null;
+        });
     }
 }
