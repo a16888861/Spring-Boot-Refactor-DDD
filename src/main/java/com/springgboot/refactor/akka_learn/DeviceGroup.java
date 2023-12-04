@@ -26,6 +26,74 @@ public class DeviceGroup extends AbstractActor {
         return Props.create(DeviceGroup.class, () -> new DeviceGroup(groupId));
     }
 
+    public static final class RequestAllTemperatures {
+        final long requestId;
+
+        public RequestAllTemperatures(long requestId) {
+            this.requestId = requestId;
+        }
+    }
+
+    public static final class RespondAllTemperatures {
+        public final long requestId;
+        public final Map<String, TemperatureReading> temperatures;
+
+        public RespondAllTemperatures(long requestId, Map<String, TemperatureReading> temperatures) {
+            this.requestId = requestId;
+            this.temperatures = temperatures;
+        }
+    }
+
+    public static interface TemperatureReading {
+    }
+
+    public static final class Temperature implements TemperatureReading {
+        public final double value;
+
+        public Temperature(double value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Temperature that = (Temperature) o;
+
+            return Double.compare(that.value, value) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            long temp = Double.doubleToLongBits(value);
+            return (int) (temp ^ (temp >>> 32));
+        }
+
+        @Override
+        public String toString() {
+            return "Temperature{" +
+                    "value=" + value +
+                    '}';
+        }
+    }
+
+    public enum TemperatureNotAvailable implements TemperatureReading {
+        INSTANCE
+    }
+
+    public enum DeviceNotAvailable implements TemperatureReading {
+        INSTANCE
+    }
+
+    public enum DeviceTimedOut implements TemperatureReading {
+        INSTANCE
+    }
+
     @AllArgsConstructor
     public static final class RequestDeviceList {
         final long requestId;
@@ -92,6 +160,7 @@ public class DeviceGroup extends AbstractActor {
         return receiveBuilder()
                 .match(Device.RequestTrackDevice.class, this::onTrackDevice)
                 .match(RequestDeviceList.class, this::onDeviceList)
+                // expectTerminated 方法会自动发这个事件
                 .match(Terminated.class, this::onTerminated)
                 .build();
     }

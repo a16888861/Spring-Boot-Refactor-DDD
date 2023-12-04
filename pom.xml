@@ -165,7 +165,7 @@
             <version>${guava.version}</version>
         </dependency>
 
-
+        <!-- akka相关配置 -->
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-actor_2.13</artifactId>

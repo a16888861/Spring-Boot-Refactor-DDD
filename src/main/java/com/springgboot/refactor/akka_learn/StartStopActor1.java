@@ -4,6 +4,13 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+
+import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Actor启动停止的例子
@@ -30,7 +37,18 @@ class StartStopActor1 extends AbstractActor {
 
         ActorRef second = getContext().actorOf(StartStopActor2.props(), "second");
         // 发送消息并告诉对方自身的地址 如果不想告诉地址就用 ActorRef.noSender() 这个是经典版的写法 新版的写法好像不一样 先了解概念
-        second.tell("hello", super.getSelf());
+        // 一般来说，从AbstractActor那里得到回复有两种方式：第一种是通过已发送的消息（actorRef.tell(msg, sender)），只有原始发送者是AbstractActor时才有效，第二种是通过Future
+//        second.tell("hello", super.getSelf());
+        Timeout timeout = Timeout.create(Duration.ofSeconds(5));
+        Future<Object> future = Patterns.ask(second, "hello", timeout);
+        try {
+            String result = (String) Await.result(future, timeout.duration());
+            System.out.println(result);
+        } catch (TimeoutException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println(second);
     }
 

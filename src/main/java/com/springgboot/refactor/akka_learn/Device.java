@@ -45,7 +45,7 @@ public class Device extends AbstractActor {
     }
 
     public static final class ReadTemperature {
-        final long requestId;
+        public final long requestId;
 
         public ReadTemperature(long requestId) {
             this.requestId = requestId;
