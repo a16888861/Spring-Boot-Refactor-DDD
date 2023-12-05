@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -37,6 +37,7 @@
         <weixin-java-miniapp.version>4.5.0</weixin-java-miniapp.version>
         <!-- akka -->
         <akka.version>2.9.0</akka.version>
+        <akka.management.version>1.5.0</akka.management.version>
     </properties>
 
     <dependencies>
@@ -166,6 +167,11 @@
         </dependency>
 
         <!-- akka相关配置 -->
+        <dependency>
+            <groupId>com.lightbend.akka.management</groupId>
+            <artifactId>akka-management-cluster-bootstrap_2.13</artifactId>
+            <version>${akka.management.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-actor_2.13</artifactId>

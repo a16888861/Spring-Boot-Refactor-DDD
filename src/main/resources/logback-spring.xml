@@ -25,10 +25,47 @@
                     converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
     <!-- 彩色日志格式 -->
     <property name="CONSOLE_LOG_PATTERN"
-              value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(traceId:%X{traceId}) %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.25t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
     <!-- 输出到控制台(本地看哪种方便一点 自己做调整) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 日志文件输出格式 -->
+<!--        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
+<!--            <providers>-->
+<!--                <pattern>-->
+<!--                    <pattern>-->
+<!--                        {-->
+<!--                        &lt;!&ndash;打印时间&ndash;&gt;-->
+<!--                        "time": "%date{yyyy-MM-dd HH:mm:ss.SSS}",-->
+<!--                        &lt;!&ndash;日志ID&ndash;&gt;-->
+<!--                        "traceId": "%X{traceId}",-->
+<!--                        &lt;!&ndash;日志级别&ndash;&gt;-->
+<!--                        "level": "%level",-->
+<!--                        &lt;!&ndash;线程名&ndash;&gt;-->
+<!--                        "thread": "%thread",-->
+<!--                        &lt;!&ndash;全限定类名&ndash;&gt;-->
+<!--                        "class": "%logger{0}",-->
+<!--                        &lt;!&ndash;日志打印的信息&ndash;&gt;-->
+<!--                        "message": "%msg",-->
+<!--                        &lt;!&ndash;堆栈异常信息&ndash;&gt;-->
+<!--                        "stackTrace":"%xEx"-->
+<!--                        }-->
+<!--                    </pattern>-->
+<!--                </pattern>-->
+<!--            </providers>-->
+<!--        </encoder>-->
+        <!-- 使用彩色日志配置 -->
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <!-- 设置字符集 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 输出到文件 DEBUG -->
+    <appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${LOG_HOME}/debug.log</file>
         <!-- 日志文件输出格式 -->
         <encoder charset="UTF-8" class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
@@ -54,12 +91,17 @@
                 </pattern>
             </providers>
         </encoder>
-        <!-- 使用彩色日志配置 -->
-        <encoder>
-            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
-            <!-- 设置字符集 -->
-            <charset>UTF-8</charset>
-        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 每天日志归档路径以及格式 -->
+            <fileNamePattern>${LOG_HOME}/debug/debug.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>1</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
     </appender>
 
     <!-- 输出到文件 INFO -->
@@ -203,6 +245,7 @@
         <appender-ref ref="INFO"/>
         <appender-ref ref="WARN"/>
         <appender-ref ref="ERROR"/>
+        <appender-ref ref="DEBUG"/>
     </root>
 
     <!-- sql操作日志 -->
