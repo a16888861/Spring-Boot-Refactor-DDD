@@ -6,7 +6,7 @@
     <property name="appName" value="rn-kafka"/>
     <!-- 如果在ECS上部署服务测试和正式 日志的文件夹可以自行加一个环境参数做区分 -->
     <springProfile name="dev">
-        <property name="LOG_HOME" value="./.logs/"/>
+        <property name="LOG_HOME" value="./logs"/>
     </springProfile>
     <springProfile name="test">
         <property name="LOG_HOME" value="/logs"/>

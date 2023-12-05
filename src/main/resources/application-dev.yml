@@ -3,10 +3,6 @@ server:
     accesslog:
       # 日志存放目录
       dir: ./logs
-# logback
-logging:
-  file:
-    path: ./logs
 # 全局自定义的一些配置
 global:
   # 异步线程池配置(监听器 or 定时任务使用)

@@ -13,7 +13,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -216,7 +215,7 @@ public class WebLogAspect {
                 params = queryString;
             }
         }
-        requestInfoBuilder.params(params.toString());
+        requestInfoBuilder.params(params);
 
         JSONObject header = new JSONObject();
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -231,7 +230,7 @@ public class WebLogAspect {
         }
         requestInfoBuilder
                 .token(token)
-                .header(header.toJSONString())
+                .header(header)
                 .traceId(MDC.get(BaseConstants.TRACE_ID))
                 .startTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")));
 
@@ -252,10 +251,10 @@ public class WebLogAspect {
                                 .requestInfo(requestInfo)
                                 .resultStr(
                                         result == null ?
-                                                "" : result.toString()
+                                                "" : result
                                 )
-                                .params(requestInfo.getParams().toString())
-                                .header(requestInfo.getHeader().toString())
+                                .params(requestInfo.getParams())
+                                .header(requestInfo.getHeader())
                                 .token(requestInfo.getToken())
                                 .traceId(requestInfo.getTraceId())
                                 .build()
