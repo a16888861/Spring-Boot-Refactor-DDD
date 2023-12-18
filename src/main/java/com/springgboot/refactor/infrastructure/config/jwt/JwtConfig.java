@@ -33,7 +33,7 @@ public class JwtConfig {
         // 获取配置文件 取当前环境
         ConfigurableEnvironment environment = configurableApplicationContext.getEnvironment();
         Binder binder = Binder.get(environment);
-        // 读取不同环境下的线程池的配置
+        // 读取不同环境下的Jwt的配置
         JwtProperties jwtProperties =
                 binder.bind(
                                 JWT_PRE_ADDRESS,

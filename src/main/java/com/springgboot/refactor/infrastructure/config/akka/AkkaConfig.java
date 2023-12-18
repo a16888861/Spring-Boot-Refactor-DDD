@@ -45,14 +45,19 @@ public class AkkaConfig implements DisposableBean {
                         Bindable.of(AkkaProperties.class)
                 ).get();
         log.info("akkaProperties:{}", JSONObject.toJSONString(akkaProperties));
-        // 1.初始化DNS配置 todo
-        // 2.是否开启DNS自动刷新 todo
+        // 1.初始化DNS配置 是否开启DNS自动刷新 在同一个网络下即可 这步其实无关痛痒 不做即可 不在同一个网络下那种场景
+        // 2.创建akka种子节点
+        /*
+         * 3.1:如果是计算框架的话那么这里可以将自己写的一些组件注册进来 比如定义一个顶层实现类 or 用注解的方式初始化 把它当成spring中bean的加载过程就可以很好理解了 原理类似
+         * 3.2:如果是业务查询那种的话 用的是另一种方式 以一个http请求贯穿actor生命周期的
+         */
         // ...
     }
 
     @Override
     public void destroy() {
 //        applicationEventPublisher.publishEvent();
+        // 这里可以用毒丸 让akka停止
         log.info("Stopping server: {}", "Akka");
     }
 }
