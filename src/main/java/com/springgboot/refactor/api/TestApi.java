@@ -4,7 +4,7 @@ import com.springgboot.refactor.api.vo.TestVo;
 import com.springgboot.refactor.application.test.TestService;
 import com.springgboot.refactor.domain.test.entity.TestPojo;
 import com.springgboot.refactor.domain.test.event.TestEvent;
-import com.springgboot.refactor.infrastructure.response.WebResponse;
+import com.springgboot.refactor.infa.response.WebResponse;
 import com.springgboot.refactor.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.springgboot.refactor.api.miniApp.login;
 
-import com.springgboot.refactor.infrastructure.response.WebResponse;
+import com.springgboot.refactor.infa.response.WebResponse;
 import com.springgboot.refactor.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

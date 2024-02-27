@@ -3,7 +3,7 @@ package com.springgboot.refactor.util;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.springgboot.refactor.infrastructure.config.jwt.JwtProperties;
+import com.springgboot.refactor.infa.config.jwt.JwtProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
